@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name">GetTunnel</string>
+
+    <string name="labelLocalPort">Local Port</string>
+    <string name="labelServer">Server</string>
+    <string name="labelTarget">Target</string>
+    <string name="btnRun">Run</string>
+    <string name="btnRunStop">Stop</string>
+    <string name="btnHostHeader">Host Header</string>
+    <string name="btnPassword">Pass</string>
+    <string name="btnInject">Inject</string>
+
+    <string name="titleHostHeaderInput">Host Header</string>
+    <string name="titlePassInput">Password</string>
+    <string name="titleInjectInput">Body Inject</string>
+    <string name="titleClearConfigDialog">Clear configuration?</string>
+
+    <string name="msgServiceDisconnect">Service disconnected!</string>
+    <string name="msgLocalPortInvalido">Invalid Local Port!</string>
+    <string name="msgServerInvalido">Invalid Server!</string>
+    <string name="msgTargetInvalido">Invalid Target!</string>
+    <string name="msgExport">Done!</string>
+    <string name="msgExportError">Error on saving file!</string>
+    <string name="msgReset">Done!</string>
+    <string name="msgResetError">Error on saving file!</string>
+    <string name="msgLoaded">Loaded!</string>
+    <string name="msgLoadError">Error on loading file!</string>
+
+    <string name="menu_log">Log</string>
+    <string name="menu_import">Import</string>
+    <string name="menu_export">Export</string>
+    <string name="menu_clear_config">Clear config</string>
+    <string name="menu_clear_log">Clear log</string>
+    <string name="menu_about">About</string>
+
+    <string name="exportFileDialog">Export config</string>
+    <string name="labelCheckBoxEditable">Editable</string>
+    <string name="labelTextFieldFileName">File name</string>
+    <string name="activity_file_explorer">File Explorer</string>
+
+    <string name="btnOkFileExplorer">Ok</string>
+    <string name="btnUpFileExplorer">Up</string>
+    <string name="down">DOWN</string>
+    <string name="up">UP</string>
+
+    <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]An android client for HTTP tunneling.[nl][tb]It consists in transport TCP packets of a local port to a remote host:port through a server (running the server side application).[nl][tb]Are established two connections to the server: on first the data is sent in GET requests (as a value in base64 of a header), while on the second the data are received as a continue HTTP response of a GET request.[nl][nl]Version date: 29/04/2017</string>
+</resources>
