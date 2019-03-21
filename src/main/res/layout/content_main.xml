@@ -108,16 +108,6 @@
                 android:id="@+id/btnPass"
                 android:layout_gravity="center_horizontal"
                 android:onClick="onClickBtnPass" />
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="1dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btnInject"
-                android:id="@+id/btnInject"
-                android:layout_gravity="center_horizontal"
-                android:onClick="onClickBtnInject" />
         </LinearLayout>
 
         <LinearLayout

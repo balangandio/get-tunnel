@@ -1,5 +1,6 @@
 package com.comxa.universo42.gettunnel.modelo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -75,6 +76,43 @@ public class ServerResponse {
 		return isValid;
 	}
 
+	public boolean readToEof() throws IOException {
+		isValid = true;
+
+		String req = readToEof(in, 4096, MAX_LEN_SERVER_RESPONSE_HEAD);
+
+		if (req.isEmpty()) {
+			isValid = false;
+		} else {
+			if (!setStatusLine(req)) {
+				isValid = false;
+			} else {
+				if (req.contains(ID_HEADER)) {
+					id = getHeaderVal(req, ID_HEADER);
+
+					if (id == null) {
+						isValid = false;
+					}
+				}
+			}
+		}
+
+		return isValid;
+	}
+
+	private String readToEof(InputStream in, int bufferLen, int maxBytes) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte buffer[] = new byte[bufferLen];
+		int len, count = 0;
+
+		while ((len = in.read(buffer)) != -1 && count <= maxBytes) {
+			baos.write(buffer, 0, len);
+			count += len;
+		}
+
+		return new String(baos.toByteArray());
+	}
+
 	private String getLinha(InputStream in, int maxQtdBytes) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		int b = 0;
@@ -130,6 +168,18 @@ public class ServerResponse {
 		return true;
 	}
 
+	private String getHeaderVal(String req, String header) {
+		int index = req.indexOf(header);
+
+		if (index != -1) {
+			req = req.substring(index);
+
+			return getHeaderVal(req);
+		}
+
+		return null;
+	}
+
 	private String getHeaderVal(String header) {
 		int ini = header.indexOf(':');
 
@@ -141,7 +191,7 @@ public class ServerResponse {
 		int fim = header.indexOf("\r\n");
 
 		if (fim == -1)
-			header.substring(ini);
+			return header.substring(ini);
 
 		return header.substring(ini, fim);
 	}

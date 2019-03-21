@@ -40,6 +40,8 @@ public class ServerClientService extends Service implements ServiceControl {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
         if (isOnForegroud)
             return START_NOT_STICKY;
 

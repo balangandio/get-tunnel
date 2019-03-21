@@ -1,9 +1,13 @@
 package com.comxa.universo42.gettunnel;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,12 +20,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comxa.universo42.gettunnel.R;
 import com.comxa.universo42.gettunnel.view.FileListAdapter;
 
 public class FileExplorerActivity extends Activity {
     public static final int RESULT_CODE_CANCELED = 2;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 42;
 
     private Button btnOk;
     private Button btnParent;
@@ -34,6 +40,8 @@ public class FileExplorerActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_explorer);
 
@@ -45,7 +53,12 @@ public class FileExplorerActivity extends Activity {
         this.lista.setOnItemClickListener(getOnItemClickLista());
 
         this.dirAtual = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-        makeLista(this.dirAtual);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            makeLista(this.dirAtual);
+        }
     }
 
     @Override
@@ -89,33 +102,48 @@ public class FileExplorerActivity extends Activity {
     public void makeLista(File dir) {
         File[] files = dir.listFiles();
 
-        this.filesLista.clear();
-        ArrayList<File> fileOnlyList = new ArrayList<File>();
+        if (files != null) {
+            this.filesLista.clear();
+            ArrayList<File> fileOnlyList = new ArrayList<File>();
 
-        for (File file : files) {
-            if (!file.getName().startsWith(".")) {
-                if (file.isDirectory()) {
-                    this.filesLista.add(file);
-                } else {
-                    fileOnlyList.add(file);
+            for (File file : files) {
+                if (!file.getName().startsWith(".")) {
+                    if (file.isDirectory()) {
+                        this.filesLista.add(file);
+                    } else {
+                        fileOnlyList.add(file);
+                    }
                 }
             }
+
+            Comparator<File> comparator = new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().toUpperCase().compareTo(o2.getName().toUpperCase());
+                }
+            };
+
+            Collections.sort(this.filesLista, comparator);
+            Collections.sort(fileOnlyList, comparator);
+
+            this.filesLista.addAll(fileOnlyList);
+
+            this.adapter = new FileListAdapter(this.filesLista, this);
+            this.lista.setAdapter(this.adapter);
+        } else {
+            Toast.makeText(this, getString(R.string.msg_sempermissao), Toast.LENGTH_SHORT).show();
         }
+    }
 
-        Comparator<File> comparator = new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                return o1.getName().toUpperCase().compareTo(o2.getName().toUpperCase());
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode ==MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makeLista(this.dirAtual);
+            } else {
+                Toast.makeText(this, getString(R.string.msg_sempermissao), Toast.LENGTH_SHORT).show();
             }
-        };
-
-        Collections.sort(this.filesLista, comparator);
-        Collections.sort(fileOnlyList, comparator);
-
-        this.filesLista.addAll(fileOnlyList);
-
-        this.adapter = new FileListAdapter(this.filesLista, this);
-        this.lista.setAdapter(this.adapter);
+        }
     }
 
     public void finish(int retCod, Intent data) {

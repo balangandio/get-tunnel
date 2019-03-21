@@ -1,15 +1,13 @@
 package com.comxa.universo42.gettunnel;
 
-import android.util.Log;
-
 import com.comxa.universo42.embaralhador.Embaralhador;
+import com.comxa.universo42.embaralhador.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class ConfigLoader {
@@ -162,14 +160,6 @@ public class ConfigLoader {
         return true;
     }
 
-    public String getTargetAddr() {
-        return this.targetAddr;
-    }
-
-    public int getTargetPort() {
-        return this.targetPort;
-    }
-
     public String getHostHeader() {
         return this.hostHeader;
     }
@@ -186,12 +176,16 @@ public class ConfigLoader {
         if (getPass() == null || getPass().isEmpty()) {
             return null;
         }
-        return new String(Embaralhador.desembaralhar(getPass().getBytes()));
+        return new String(Base64.decode(getPass()));
     }
 
     public void setPass(String pass) {
-        if (pass != null && !pass.isEmpty()) {
-            this.pass = new String(Embaralhador.embaralhar(pass.getBytes()));
+        if (pass != null) {
+            if (pass.isEmpty()) {
+                this.pass = null;
+            } else {
+                this.pass = Base64.encode(pass);
+            }
         }
     }
 
@@ -237,23 +231,26 @@ public class ConfigLoader {
     }
 
     private void saveFile(File f) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        StringBuilder builder = new StringBuilder();
 
-        PrintWriter pw = new PrintWriter(baos);
-        pw.println(this.isEditable);
-        pw.println(this.localPort);
-        pw.println(getServer());
-        pw.println(getTarget());
-        pw.println(this.hostHeader);
-        pw.println(this.pass);
-        pw.println(this.bodyInject.length() > 0 ? new String(Embaralhador.embaralhar(this.bodyInject.getBytes()))
+        builder.append(this.isEditable);
+        builder.append("\n");
+        builder.append(this.localPort);
+        builder.append("\n");
+        builder.append(getServer());
+        builder.append("\n");
+        builder.append(getTarget());
+        builder.append("\n");
+        builder.append(this.hostHeader);
+        builder.append("\n");
+        builder.append(this.pass);
+        builder.append("\n");
+        builder.append(this.bodyInject.length() > 0 ? Embaralhador.embaralhar(this.bodyInject)
                                                 : this.bodyInject);
-        pw.close();
-
-        byte[] bytes = Embaralhador.embaralhar(baos.toByteArray());
+        builder.append("\n");
 
         FileOutputStream file = new FileOutputStream(f);
-        file.write(bytes);
+        file.write(Embaralhador.embaralhar(builder.toString()).getBytes());
         file.close();
     }
 
@@ -263,7 +260,7 @@ public class ConfigLoader {
         pref.putString(KEY_SERVER, getServer());
         pref.putString(KEY_TARGET, getTarget());
         pref.putInt(KEY_LOCAL_PORT, getLocalPort());
-        pref.putString(KEY_PASS, getPassDesembaralhada());
+        pref.putString(KEY_PASS, getPass());
         pref.putBoolean(KEY_EDITABLE, isEditable());
         pref.save();
     }
@@ -328,7 +325,7 @@ public class ConfigLoader {
         setEditable(pref.getBoolean(KEY_EDITABLE, true));
         setLocalPort(pref.getInt(KEY_LOCAL_PORT, DEFAULT_LOCAL_PORT));
         setHostHeader(pref.getString(KEY_HOST_HEADER, DEFAULT_HOST_HEADER));
-        setPass(pref.getString(KEY_PASS, DEFAULT_PASS));
+        this.pass = pref.getString(KEY_PASS, DEFAULT_PASS);
         setBodyInject(pref.getString(KEY_BODY, DEFAULT_BODY_INJECT));
         setTarget(pref.getString(KEY_TARGET, DEFAULT_TARGET_ADDR));
         setServer(pref.getString(KEY_SERVER, DEFAULT_SERVER_ADDR));

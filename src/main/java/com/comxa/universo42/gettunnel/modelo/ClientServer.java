@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,7 +24,7 @@ public class ClientServer implements Runnable {
 
 	private List<Connection> connections = new LinkedList<Connection>();
 	private Lock connectionsLock = new ReentrantLock();
-	private boolean isStopped;
+	private AtomicBoolean isStopped = new AtomicBoolean(false);
 	private ByteCounter counter;
 	private ConnectionConfig config;
 
@@ -53,10 +54,8 @@ public class ClientServer implements Runnable {
 	}
 
 	public void close() {
-		if (!isStopped) {
-			handleLog("closed");
-			isStopped = true;
-
+		handleLog("closed");
+		if (!isStopped.getAndSet(true)) {
 			if (counter != null) {
 				counter.stop();
 			}
@@ -73,8 +72,9 @@ public class ClientServer implements Runnable {
 				connections = new LinkedList<Connection>(this.connections);
 			}
 
-			for (Connection connection : connections)
+			for (Connection connection : connections) {
 				connection.close();
+			}
 		}
 	}
 
@@ -108,17 +108,15 @@ public class ClientServer implements Runnable {
 
 			@Override
 			public void onClosed() {
-				connectionsLock.lock();
-				try {
+				synchronized (connectionsLock) {
 					connections.remove(this);
-				} finally {
-					connectionsLock.unlock();
 				}
 			}
 		};
 
-		if (counter != null)
+		if (counter != null) {
 			conn.setByteCounter(counter);
+		}
 
 		synchronized (connectionsLock) {
 			connections.add(conn);
@@ -129,8 +127,9 @@ public class ClientServer implements Runnable {
 	}
 
 	private void handleLog(String log) {
-		if (!isStopped)
+		if (!isStopped.get()) {
 			onLog("ClientServer: " + log);
+		}
 	}
 
 	public void onLog(String log) {}

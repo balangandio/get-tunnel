@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public static final int MILLISECONDS_BYTE_COUNTER = 1000;
     public static final int MILLISECONDS_LOG_REFRESH = 500;
     public static final int LOG_BOX_SIZE = 50;
-    //public static final String FILE_CONFIG = "config.conf";
     public static final String LISTENING_ADDR = "127.0.0.1";
 
     private EditText txtServer;
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private Button btnRun;
     private Button btnHost;
     private Button btnPass;
-    private Button btnInject;
     private TextView txtViewUp;
     private TextView txtViewDown;
     private TextView txtViewLog;
@@ -77,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -88,12 +89,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         btnRun = (Button) findViewById(R.id.btnRun);
         btnHost = (Button) findViewById(R.id.btnHost);
         btnPass = (Button) findViewById(R.id.btnPass);
-        btnInject = (Button) findViewById(R.id.btnInject);
         txtViewUp = (TextView) findViewById(R.id.txtViewUp);
         txtViewDown = (TextView) findViewById(R.id.txtViewDown);
         txtViewLog = (TextView) findViewById(R.id.txtViewLog);
 
-        //config = new ConfigLoader(getFilesDir().getAbsolutePath() + "/" + FILE_CONFIG);
         config = new ConfigLoader(new ConfigPref(getPreferences(MODE_PRIVATE)));
         loadConfig();
         menuExportEnable = config.isEditable();
@@ -123,9 +122,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -196,10 +194,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     public void onClickBtnHostHeader(View view) {
         showHostInput();
-    }
-
-    public void onClickBtnInject(View view) {
-        showBodyInjectInput();
     }
 
     public void onClickBtnPass(View view) {
@@ -369,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             txtTarget.setEnabled(config.isEditable());
             btnHost.setEnabled(config.isEditable());
             btnPass.setEnabled(config.isEditable());
-            btnInject.setEnabled(config.isEditable());
         } catch(IOException e) {
             showMsg(e.getMessage());
         }
@@ -381,7 +374,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         txtTarget.setEnabled(config.isEditable() && enable);
         btnHost.setEnabled(config.isEditable() && enable);
         btnPass.setEnabled(config.isEditable() && enable);
-        btnInject.setEnabled(config.isEditable() && enable);
     }
 
     private void setEnableMenu(boolean enable) {
@@ -452,25 +444,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 config.setHostHeader(input.getText().toString());
-            }
-        });
-
-        builder.show();
-    }
-
-    private void showBodyInjectInput() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.titleInjectInput));
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(config.getBodyInject());
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                config.setBodyInject(input.getText().toString());
             }
         });
 

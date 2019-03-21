@@ -10,6 +10,8 @@
     <string name="btnHostHeader">Host Header</string>
     <string name="btnPassword">Pass</string>
     <string name="btnInject">Inject</string>
+    <string name="btnCopy">Copy</string>
+    <string name="btnShare">Share</string>
 
     <string name="titleHostHeaderInput">Host Header</string>
     <string name="titlePassInput">Password</string>
@@ -26,6 +28,7 @@
     <string name="msgResetError">Error on saving file!</string>
     <string name="msgLoaded">Loaded!</string>
     <string name="msgLoadError">Error on loading file!</string>
+    <string name="msg_copiado">Copied</string>
 
     <string name="menu_log">Log</string>
     <string name="menu_import">Import</string>
@@ -44,5 +47,7 @@
     <string name="down">DOWN</string>
     <string name="up">UP</string>
 
-    <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]An android client for HTTP tunneling.[nl][tb]It consists in transport TCP packets of a local port to a remote host:port through a server (running the server side application).[nl][tb]Are established two connections to the server: on first the data is sent in GET requests (as a value in base64 of a header), while on the second the data are received as a continue HTTP response of a GET request.[nl][nl]Version date: 29/04/2017</string>
+    <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]An android client for HTTP tunneling.[nl][tb]It consists in transport TCP packets of a local port to a remote host:port through a server (running the server side application).[nl][tb]Are established two connections to the server: on first the data is sent in single POST request, while on the second the data are received as a continue HTTP response of a GET request.[nl][nl]Version date: 25/06/2017</string>
+    <string name="crash_report">Crash Report</string>
+    <string name="msg_sempermissao">No permission to read storage</string>
 </resources>
