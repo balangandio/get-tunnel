@@ -47,7 +47,7 @@
   <string name="down">DOWN</string>
   <string name="up">UP</string>
 
-  <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]Cliente android para tunelamento HTTP.[nl][tb]A aplicação consiste em transportar pacotes TCP em uma porta local para um host:port remoto por intermédio de um servidor (executando a aplicação servidor).[nl][tb]São estabelecidas duas conexões com o servidor: na primeira conexão os dados são enviados em uma requisição POST contínua, enquanto que na segunda os dados são recebidos como resposta de uma única requisição GET.[nl][nl]Version date: 25/06/2017</string>
+  <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]Cliente android para tunelamento HTTP.[nl][tb]A aplicação consiste em transportar pacotes TCP em uma porta local para um host:port remoto por intermédio de um servidor (executando a aplicação servidor).[nl][tb]São estabelecidas duas conexões com o servidor: na primeira conexão os dados são enviados em uma requisição POST contínua, enquanto que na segunda os dados são recebidos como resposta de uma única requisição GET.[nl][nl]Version date: 10/09/2017</string>
   <string name="crash_report">Crash Report</string>
   <string name="msg_sempermissao">Sem permissão para ler armazenamento</string>
 </resources>

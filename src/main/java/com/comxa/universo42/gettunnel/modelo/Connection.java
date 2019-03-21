@@ -218,7 +218,7 @@ public class Connection implements Runnable {
     private void sendConnectionCreate(OutputStream out) throws IOException {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("POST / HTTP/1.1\r\n");
+        builder.append("GET / HTTP/1.1\r\n");
         builder.append("Host: " + this.config.getHostHeader() + "\r\n");
         builder.append("User-Agent: GetTunnelClient\r\n");
         builder.append(ACTION_HEADER + ACTION_CREATE + "\r\n");
@@ -236,14 +236,16 @@ public class Connection implements Runnable {
     private void sendConnectionComplete(OutputStream out, String id) throws IOException {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("POST / HTTP/1.1\r\n");
-        builder.append("User-Agent: GetTunnelClient\r\n");
+        builder.append("GET / HTTP/1.1\r\n");
         builder.append("Host: " + this.config.getHostHeader() + "\r\n");
+        builder.append("User-Agent: GetTunnelClient\r\n");
         builder.append(ACTION_HEADER + ACTION_COMPLETE + "\r\n");
         builder.append(ID_HEADER + id + "\r\n");
-        builder.append("Content-Type: application/octet-stream\r\n");
-        builder.append(CONTENT_HEADER + "0\r\n");
-        builder.append("Connection: Keep-Alive\r\n\r\n");
+        //builder.append("Content-Type: application/octet-stream\r\n");
+        //builder.append(CONTENT_HEADER + "0\r\n");
+        //builder.append("Connection: Keep-Alive\r\n\r\n");
+        //builder.append("X-Body: 5\r\n");
+        builder.append("Connection: close\r\n\r\n");
 
         out.write(builder.toString().getBytes());
     }
@@ -251,7 +253,7 @@ public class Connection implements Runnable {
     private void sendDataRequest(OutputStream out) throws IOException {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("POST / HTTP/1.1\r\n");
+        builder.append("GET / HTTP/1.1\r\n");
         builder.append("Host: " + this.config.getHostHeader() + "\r\n");
         builder.append("User-Agent: GetTunnelClient\r\n");
         builder.append(ACTION_HEADER + ACTION_DATA + "\r\n");
