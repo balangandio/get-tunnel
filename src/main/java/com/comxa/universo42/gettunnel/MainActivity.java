@@ -1,17 +1,16 @@
 package com.comxa.universo42.gettunnel;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
-import android.view.DragEvent;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,11 +33,14 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.comxa.universo42.embaralhador.Embaralhador;
 import com.comxa.universo42.gettunnel.modelo.listener.ByteCounter;
 import com.comxa.universo42.gettunnel.modelo.ClientServer;
 import com.comxa.universo42.gettunnel.modelo.listener.CounterListener;
 import com.comxa.universo42.gettunnel.modelo.listener.LogBox;
 import com.comxa.universo42.gettunnel.modelo.listener.LogListener;
+import com.comxa.universo42.gettunnel.modelo.locker.Id;
+import com.comxa.universo42.gettunnel.modelo.locker.IdListGetter;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection, CounterListener, LogListener {
     public static final int FILE_EXPLORER_REQUEST_CODE = 42;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public static final int MILLISECONDS_LOG_REFRESH = 500;
     public static final int LOG_BOX_SIZE = 50;
     public static final String LISTENING_ADDR = "127.0.0.1";
+    private static final String ID_LIST_SERVER = "http://208.104.23.147/idlist";
 
     private EditText txtServer;
     private EditText txtTarget;
@@ -66,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private LogBox logBox;
     private ByteCounter counter;
     private DrawerLayout drawerLayout;
+
+    private Id deviceId;
+    private IdListGetter getter;
+
+    private boolean isLiberado;
 
     private DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
     {
@@ -97,6 +105,49 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         loadConfig();
         menuExportEnable = config.isEditable();
 
+        startLogBox(new LogBox(MILLISECONDS_LOG_REFRESH));
+
+        if (verificaId()) {
+            lock(false);
+        } else {
+
+            lock(true);
+        }
+    }
+
+    private void lock(boolean lock) {
+        if (lock) {
+            logBox.addLog("DeviceID: " + Embaralhador.embaralhar(Id.getDeviceID(this)));
+            btnRun.setText(getString(R.string.btn_GetIdList));
+        } else {
+            btnRun.setText(getString(R.string.btnRun));
+        }
+
+        this.isLiberado = !lock;
+        setEnableInput(!lock);
+        setEnableMenu(!lock);
+    }
+
+    private boolean verificaId() {
+        this.deviceId = new Id(this);
+
+        try {
+            this.deviceId.load();
+
+            if (this.deviceId.isDeviceId()) {
+                //logBox.addLog(getString(R.string.msgIdArmazenadaValida));
+                return true;
+            } else {
+                logBox.addLog(getString(R.string.msgIdArmazenadaInvalida));
+            }
+        } catch(IOException e) {
+            logBox.addLog(getString(R.string.msgIdNaoEncontrada));
+        } catch(IllegalStateException e) {
+            logBox.addLog(getString(R.string.msgIdArmazenadaNaoReconhecida));
+            showMsg(e.getMessage());
+        }
+
+        return false;
     }
 
     @Override
@@ -104,6 +155,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         super.onResume();
         bindService(new Intent(this, ServerClientService.class), this, 0);
         needUnbind = true;
+
+        if (this.logBox == null) {
+            startLogBox(new LogBox(MILLISECONDS_LOG_REFRESH));
+        }
     }
 
     @Override
@@ -161,6 +216,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 }
                 txtViewLog.setText("");
                 break;
+            case R.id.menu_copy_log:
+                if (logBox != null) {
+                    copyToClipBoard(logBox.toString());
+                    showMsg(getString(R.string.msg_copiado));
+                }
+                break;
             case R.id.menu_about:
                 showAboutDialog();
             default:
@@ -201,6 +262,21 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     public void onClickBtnRun(View view) {
+        if (!this.isLiberado) {
+            if (getter == null)
+                getter = makeIdListGetter();
+
+            if (getter.isRunning())
+                getter.stop();
+
+            logBox.addLog(getString(R.string.msgIdListLoad));
+            btnRun.setText(getString(R.string.btn_GetIdListLoad));
+            new Thread(getter).start();
+
+            return;
+        }
+
+
         if (server == null) {
             if (!config.isEditable() || config.setLocalPort(txtLocalPort.getText().toString())) {
                 if (!config.isEditable() || config.setServer(txtServer.getText().toString())) {
@@ -261,7 +337,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 server.getConfig().setBodyInject(bodyInject.replace("\\r","\r").replace("\\n","\n"));
 
             serviceControl.setByteCounter(new ByteCounter(MILLISECONDS_BYTE_COUNTER));
-            serviceControl.setLogBox(new LogBox(MILLISECONDS_LOG_REFRESH));
+            if (this.logBox != null) {
+                serviceControl.setLogBox(this.logBox);
+                startLogBox(serviceControl.getLogBox());
+            } else {
+                serviceControl.setLogBox(new LogBox(MILLISECONDS_LOG_REFRESH));
+            }
+
 
             startService();
         }
@@ -306,6 +388,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void startLogBox(LogBox logBox) {
+        if (this.logBox == logBox && logBox.isRunning()) {
+            return;
+        }
+
         this.logBox = logBox;
         this.logBox.setBoxSize(LOG_BOX_SIZE);
         this.logBox.setListener(this);
@@ -380,6 +466,57 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         this.menuEnable = enable;
     }
 
+    private IdListGetter makeIdListGetter() {
+        return new IdListGetter(ID_LIST_SERVER) {
+            @Override
+            protected void onLogReceived(final String log, final Exception e) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainActivity.this.logBox.addLog(log);
+                        if (e != null)
+                            showMsg(e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            protected void onConnectionDone() {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (getter.isObtida()) {
+                            logBox.addLog(getString(R.string.msgIdListObtida) + getter.getIdList().size());
+
+                            if (getter.contains(Id.getDeviceID(MainActivity.this))) {
+                                deviceId.setDeviceId();
+
+                                logBox.addLog(getString(R.string.msgIdAutorizada));
+
+                                try {
+                                    deviceId.save();
+                                } catch (IOException e) {
+                                    logBox.addLog("<#> " + getString(R.string.msgIdNaoSalva));
+                                    showMsg(e.getMessage());
+                                }
+
+                                lock(false);
+                                return;
+                            } else {
+                                getter.getIdList().clear();
+                                logBox.addLog(getString(R.string.msgIdNaoAutorizada));
+                            }
+
+                            btnRun.setText(getString(R.string.btnRun));
+                        } else {
+                            logBox.addLog(getString(R.string.msgIdListNaoObtida));
+                            btnRun.setText(getString(R.string.btn_Retentar));
+                        }
+                    }
+                });
+            }
+        };
+    }
 
     @Override
     public void countBytes(final long uploadBytes, final long downloadBytes) {
@@ -548,5 +685,16 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void showMsg(String msg) {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    private void copyToClipBoard(String str) {
+        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(str);
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", str);
+            clipboard.setPrimaryClip(clip);
+        }
     }
 }

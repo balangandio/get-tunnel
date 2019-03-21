@@ -47,7 +47,23 @@
   <string name="down">DOWN</string>
   <string name="up">UP</string>
 
+  <string name="msgIdArmazenadaNaoReconhecida">ID armazenada não reconhecida!</string>
+  <string name="msgIdArmazenadaInvalida">ID armazenada difere do seu dispositivo!</string>
+  <string name="msgIdArmazenadaValida">Device autorizado.</string>
+  <string name="msgIdNaoEncontrada">ID ainda não armazenada.</string>
+  <string name="msgIdListLoad">Obtendo ID list...</string>
+  <string name="msgIdListObtida">ID list obtida: </string>
+  <string name="msgIdListNaoObtida">ID não list obtida!</string>
+  <string name="msgIdNaoAutorizada">Seu despositivo não é autorizado...</string>
+  <string name="msgIdAutorizada">Device autorizado.</string>
+  <string name="msgIdNaoSalva">Não foi possível salvar a ID.</string>
+
+  <string name="btn_GetIdList">Verificar ID list</string>
+  <string name="btn_GetIdListLoad">Getting...</string>
+  <string name="btn_Retentar">Retentar</string>
+
   <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]Cliente android para tunelamento HTTP.[nl][tb]A aplicação consiste em transportar pacotes TCP em uma porta local para um host:port remoto por intermédio de um servidor (executando a aplicação servidor).[nl][tb]São estabelecidas duas conexões com o servidor: na primeira conexão os dados são enviados em uma requisição POST contínua, enquanto que na segunda os dados são recebidos como resposta de uma única requisição GET.[nl][nl]Version date: 10/09/2017</string>
   <string name="crash_report">Crash Report</string>
   <string name="msg_sempermissao">Sem permissão para ler armazenamento</string>
+  <string name="menu_copiar">Copiar Log</string>
 </resources>

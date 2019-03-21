@@ -47,7 +47,23 @@
     <string name="down">DOWN</string>
     <string name="up">UP</string>
 
+    <string name="msgIdArmazenadaNaoReconhecida">Storage ID not recognized!</string>
+    <string name="msgIdArmazenadaInvalida">Storage ID diferent from device!</string>
+    <string name="msgIdArmazenadaValida">Device not authorized.</string>
+    <string name="msgIdNaoEncontrada">ID not in storage.</string>
+    <string name="msgIdListLoad">Getting ID list...</string>
+    <string name="msgIdListObtida">ID list: </string>
+    <string name="msgIdListNaoObtida">ID list not obtained!</string>
+    <string name="msgIdNaoAutorizada">Your device are not authorized...</string>
+    <string name="msgIdAutorizada">Device authorized.</string>
+    <string name="msgIdNaoSalva">ID couldnt be saved.</string>
+
+    <string name="btn_GetIdList">Check ID list</string>
+    <string name="btn_GetIdListLoad">Getting...</string>
+    <string name="btn_Retentar">Retry</string>
+
     <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]An android client for HTTP tunneling.[nl][tb]It consists in transport TCP packets of a local port to a remote host:port through a server (running the server side application).[nl][tb]Are established two connections to the server: on first the data is sent in single POST request, while on the second the data are received as a continue HTTP response of a GET request.[nl][nl]Version date: 10/09/2017</string>
     <string name="crash_report">Crash Report</string>
     <string name="msg_sempermissao">No permission to read storage</string>
+    <string name="menu_copiar">Copy Log</string>
 </resources>

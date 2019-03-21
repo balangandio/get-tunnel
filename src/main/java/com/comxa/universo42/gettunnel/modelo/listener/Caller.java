@@ -32,4 +32,8 @@ public abstract class Caller implements Runnable {
             }
         }
     }
+
+    public boolean isRunning() {
+        return running;
+    }
 }
