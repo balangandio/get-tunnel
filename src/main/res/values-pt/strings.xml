@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string name="app_name">GetTunnel</string>
+
+  <string name="labelLocalPort">Local Port</string>
+  <string name="labelServer">Server</string>
+  <string name="labelTarget">Target</string>
+  <string name="btnRun">Run</string>
+  <string name="btnRunStop">Stop</string>
+  <string name="btnHostHeader">Host Header</string>
+  <string name="btnPassword">Pass</string>
+  <string name="btnInject">Inject</string>
+
+  <string name="titleHostHeaderInput">Host Header</string>
+  <string name="titlePassInput">Password</string>
+  <string name="titleInjectInput">Body Inject</string>
+  <string name="titleClearConfigDialog">Limpar configuração?</string>
+
+  <string name="msgServiceDisconnect">Serviço desconectado!</string>
+  <string name="msgLocalPortInvalido">Local Port inválido!</string>
+  <string name="msgServerInvalido">Server inválido!</string>
+  <string name="msgTargetInvalido">Target inválido!</string>
+  <string name="msgExport">Done!</string>
+  <string name="msgExportError">Erro ao salvar arquivo!</string>
+  <string name="msgReset">Done!</string>
+  <string name="msgResetError">Erro ao salvar arquivo!</string>
+  <string name="msgLoaded">Loaded!</string>
+  <string name="msgLoadError">Erro ao carregar arquivo!</string>
+
+  <string name="menu_log">Log</string>
+  <string name="menu_import">Importar</string>
+  <string name="menu_export">Exportar</string>
+  <string name="menu_clear_config">Limpar config</string>
+  <string name="menu_clear_log">Limpar log</string>
+  <string name="menu_about">Sobre</string>
+
+  <string name="exportFileDialog">Exportar configuração</string>
+  <string name="labelCheckBoxEditable">Editável</string>
+  <string name="labelTextFieldFileName">Nome do arquivo</string>
+  <string name="activity_file_explorer">File Explorer</string>
+
+  <string name="btnOkFileExplorer">Ok</string>
+  <string name="btnUpFileExplorer">Up</string>
+  <string name="down">DOWN</string>
+  <string name="up">UP</string>
+
+  <string name="txtAbout">[tb]GetTunnel[nl][nl][tb]Cliente android para tunelamento HTTP.[nl][tb]A aplicação consiste em transportar pacotes TCP em uma porta local para um host:port remoto por intermédio de um servidor (executando a aplicação servidor).[nl][tb]São estabelecidas duas conexões com o servidor: na primeira conexão os dados são enviados em requisições GET (como valor em base64 de um header), enquanto que na segunda os dados são recebidos como resposta contínua de uma única requisição GET.[nl][nl]Version date: 29/04/2017</string>
+</resources>

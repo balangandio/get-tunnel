@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item android:id="@+id/menu_log"
+        android:title="@string/menu_log"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/menu_import"
+        android:title="@string/menu_import"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="2"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_export"
+        android:title="@string/menu_export"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:orderInCategory="3"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_clear_config"
+        android:title="@string/menu_clear_config"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="4"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_clear_log"
+        android:title="@string/menu_clear_log"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="5"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_about"
+        android:title="@string/menu_about"
+        android:icon="@android:drawable/ic_menu_more"
+        android:orderInCategory="6"
+        app:showAsAction="never"/>
+</menu>
